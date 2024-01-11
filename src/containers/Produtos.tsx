@@ -1,20 +1,27 @@
 import { Produto as ProdutoType } from '../App'
 import Produto from '../components/Produto'
-
+import { favoritar } from '../store/reducers/favorito'
+import { useDispatch, useSelector } from 'react-redux'
 import * as S from './styles'
+import { RootReducer } from '../store'
 
 type Props = {
   produtos: ProdutoType[]
-  favoritos: ProdutoType[]
-  favoritar: (produto: ProdutoType) => void
 }
 
-const ProdutosComponent = ({ produtos, favoritos, favoritar }: Props) => {
+const ProdutosComponent = ({ produtos }: Props) => {
+  const dispatch = useDispatch()
+  const favoritos = useSelector((state: RootReducer) => state.favorito.itens)
+
   const produtoEstaNosFavoritos = (produto: ProdutoType) => {
     const produtoId = produto.id
     const IdsDosFavoritos = favoritos.map((f) => f.id)
 
     return IdsDosFavoritos.includes(produtoId)
+  }
+
+  const handleFavoritar = (produto: ProdutoType) => {
+    dispatch(favoritar(produto))
   }
 
   return (
@@ -23,9 +30,9 @@ const ProdutosComponent = ({ produtos, favoritos, favoritar }: Props) => {
         {produtos.map((produto) => (
           <Produto
             estaNosFavoritos={produtoEstaNosFavoritos(produto)}
+            onFavoritar={() => handleFavoritar(produto)}
             key={produto.id}
             produto={produto}
-            favoritar={favoritar}
           />
         ))}
       </S.Produtos>
