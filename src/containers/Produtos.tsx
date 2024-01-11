@@ -4,12 +4,11 @@ import { favoritar } from '../store/reducers/favorito'
 import { useDispatch, useSelector } from 'react-redux'
 import * as S from './styles'
 import { RootReducer } from '../store'
+import { useGetProdutosQuery } from '../services/api'
 
-type Props = {
-  produtos: ProdutoType[]
-}
+const ProdutosComponent = () => {
+  const { data: produtos, isLoading } = useGetProdutosQuery()
 
-const ProdutosComponent = ({ produtos }: Props) => {
   const dispatch = useDispatch()
   const favoritos = useSelector((state: RootReducer) => state.favorito.itens)
 
@@ -24,10 +23,12 @@ const ProdutosComponent = ({ produtos }: Props) => {
     dispatch(favoritar(produto))
   }
 
+  if (isLoading) return <h2>Carregando...</h2>
+
   return (
     <>
       <S.Produtos>
-        {produtos.map((produto) => (
+        {produtos?.map((produto) => (
           <Produto
             estaNosFavoritos={produtoEstaNosFavoritos(produto)}
             onFavoritar={() => handleFavoritar(produto)}
